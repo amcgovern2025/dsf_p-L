@@ -7,7 +7,13 @@
         
         <div class="space-y-6">
           <div class="bg-green-50 border border-green-200 p-6 rounded-lg">
-            <h3 class="font-semibold text-lg text-gray-900 mb-4">2026</h3>
+            <h3 class="font-semibold text-lg text-gray-900 mb-4">
+              2026
+              <div class="tooltip">
+                <span class="info-icon">i</span>
+                <span class="tooltiptext">Revenue calculated as: Base volume (120K lbs film, 384K lbs byproduct) × Volume scale × Market penetration × Product prices</span>
+              </div>
+            </h3>
             <div class="grid grid-cols-2 gap-6">
               <div>
                 <p class="text-sm text-gray-600 mb-1">DirigoDrip Film</p>
@@ -25,7 +31,13 @@
           </div>
 
           <div class="bg-green-50 border border-green-200 p-6 rounded-lg">
-            <h3 class="font-semibold text-lg text-gray-900 mb-4">2027</h3>
+            <h3 class="font-semibold text-lg text-gray-900 mb-4">
+              2027
+              <div class="tooltip">
+                <span class="info-icon">i</span>
+                <span class="tooltiptext">Revenue calculated as: Base volumes (360K lbs film, 2.16M lbs resin, 1.15M lbs byproduct) × Volume scales × Market penetration × Product prices</span>
+              </div>
+            </h3>
             <div class="grid grid-cols-3 gap-4">
               <div>
                 <p class="text-xs text-gray-600 mb-1">DirigoDrip</p>
@@ -54,7 +66,13 @@
         
         <div class="space-y-6">
           <div class="bg-red-50 border border-red-200 p-6 rounded-lg">
-            <h3 class="font-semibold text-lg text-gray-900 mb-4">2026 COGS</h3>
+            <h3 class="font-semibold text-lg text-gray-900 mb-4">
+              2026 COGS
+              <div class="tooltip">
+                <span class="info-icon">i</span>
+                <span class="tooltiptext">COGS = Material production (volume × cost per lb) + Contract manufacturing (28% of material cost) + Base labor ($150K)</span>
+              </div>
+            </h3>
             <div class="grid grid-cols-2 gap-6">
               <div>
                 <p class="text-sm text-gray-600 mb-1">Material Production</p>
@@ -72,7 +90,13 @@
           </div>
 
           <div class="bg-red-50 border border-red-200 p-6 rounded-lg">
-            <h3 class="font-semibold text-lg text-gray-900 mb-4">2027 COGS</h3>
+            <h3 class="font-semibold text-lg text-gray-900 mb-4">
+              2027 COGS
+              <div class="tooltip">
+                <span class="info-icon">i</span>
+                <span class="tooltiptext">COGS = Material + Resin production (volumes × costs per lb) + Contract manufacturing (15% of total) + Base labor ($562.5K)</span>
+              </div>
+            </h3>
             <div class="grid grid-cols-2 gap-6">
               <div>
                 <p class="text-sm text-gray-600 mb-1">Material Production</p>
@@ -214,7 +238,13 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg" id="scenario2026">
-          <h3 class="font-semibold text-lg text-gray-900 mb-3">2026 Outlook</h3>
+          <h3 class="font-semibold text-lg text-gray-900 mb-3">
+            2026 Outlook
+            <div class="tooltip">
+              <span class="info-icon">i</span>
+              <span class="tooltiptext">Break-even calculated as Total COGS + Operating expenses. 2026 is expected investment phase with R&D and setup costs.</span>
+            </div>
+          </h3>
           <p id="scenario2026Text" class="text-amber-600 mb-3">Investment Phase - Expected Losses</p>
           <div>
             <p class="text-sm text-gray-600 mb-1">Break-even Revenue Needed</p>
@@ -223,7 +253,13 @@
         </div>
 
         <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg" id="scenario2027">
-          <h3 class="font-semibold text-lg text-gray-900 mb-3">2027 Outlook</h3>
+          <h3 class="font-semibold text-lg text-gray-900 mb-3">
+            2027 Outlook
+            <div class="tooltip">
+              <span class="info-icon">i</span>
+              <span class="tooltiptext">Margin improvement calculated as: (2027 Gross Margin % - 2026 Gross Margin %). Full-scale production anticipated.</span>
+            </div>
+          </h3>
           <p id="scenario2027Text" class="text-green-600 mb-3">Profitable Operations</p>
           <div>
             <p class="text-sm text-gray-600 mb-1">Margin Improvement vs 2026</p>
@@ -283,6 +319,42 @@
     .metric-positive { color: #059669; }
     .metric-negative { color: #dc2626; }
     .metric-neutral { color: #6b7280; }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 280px;
+      background-color: #1f2937;
+      color: white;
+      text-align: left;
+      border-radius: 6px;
+      padding: 8px 12px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -140px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+    .tooltip .tooltiptext::after {
+      content: "";
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #1f2937 transparent transparent transparent;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
     .section-title {
       font-size: 1.25rem;
       font-weight: 600;
