@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dirigo Sea Farm P&L Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+      min-height: 100vh;
+    }
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    .gradient-text {
+      background: linear-gradient(135deg, #0ea5e9, #06b6d4, #10b981);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .slider-container input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: linear-gradient(to right, #e2e8f0 0%, #cbd5e1 100%);
+      outline: none;
+    }
+    .slider-container input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(59, 130, 246, 0.4);
+      transition: all 0.2s ease;
+    }
+    .slider-container input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
+    }
+    .metric-card {
+      background: linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(248,250,252,0.9) 100%);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+      transition: all 0.3s ease;
+    }
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+    .revenue-card {
+      background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border-left: 4px solid #10b981;
+    }
+    .cost-card {
+      background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%);
+      border-left: 4px solid #ef4444;
+    }
+    .profit-card {
+      background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+      border-left: 4px solid #3b82f6;
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.6s ease-in-out;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .section-header {
+      background: linear-gradient(135deg, #1e293b, #334155);
+      color: white;
+      border-radius: 12px 12px 0 0;
+      padding: 1rem 1.5rem;
+      margin: -1.5rem -1.5rem 1.5rem -1.5rem;
+    }
+  </style>
+</head>
+<body class="p-6">
+  <div class="max-w-7xl mx-auto space-y-8">
+    <!-- Header -->
+    <header class="text-center glass-card p-8 rounded-2xl shadow-2xl animate-fade-in">
+      <h1 class="text-5xl font-bold gradient-text mb-3">Dirigo Sea Farm</h1>
+      <h2 class="text-2xl font-semibold text-slate-700 mb-2">Financial Model Dashboard</h2>
+      <p class="text-slate-600">Interactive P&L projections for DirigoDrip and HoldFast products</p>
+      <div class="mt-4 flex justify-center space-x-8 text-sm">
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+          <span class="text-slate-600">DirigoDrip Film</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+          <span class="text-slate-600">HoldFast Resin</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+          <span class="text-slate-600">Byproduct Stream</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Key Variables -->
+    <div class="glass-card p-6 rounded-2xl shadow-xl animate-fade-in">
+      <div class="section-header">
+        <h2 class="text-2xl font-semibold">🎛️ Key Variables</h2>
+        <p class="text-slate-300 text-sm mt-1">Adjust these levers to model different scenarios</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        
+        <!-- Production Variables -->
+        <div class="space-y-6">
+          <h3 class="font-semibold text-lg text-blue-800 flex items-center">
+            <span class="w-2 h-2 bg-blue-500 rounded-full mr-2"></span>
+            Production Inputs
+          </h3>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              Kelp Price: <span class="text-blue-600 font-bold">$<span id="kelpPriceValue">8.00</span>/lb</span>
+            </label>
+            <input type="range" id="kelpPrice" min="4" max="15" step="0.25" value="8" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>$4</span>
+              <span>$15</span>
+            </div>
+          </div>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              Alginate Yield: <span class="text-blue-600 font-bold"><span id="alginateYieldValue">12.0</span>%</span>
+            </label>
+            <input type="range" id="alginateYield" min="8" max="20" step="0.5" value="12" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>8%</span>
+              <span>20%</span>
+            </div>
+          </div>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              Manufacturing Efficiency: <span class="text-blue-600 font-bold"><span id="mfgEfficiencyValue">85</span>%</span>
+            </label>
+            <input type="range" id="mfgEfficiency" min="70" max="95" step="1" value="85" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>70%</span>
+              <span>95%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pricing Variables -->
+        <div class="space-y-6">
+          <h3 class="font-semibold text-lg text-green-800 flex items-center">
+            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+            Product Pricing
+          </h3>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              DirigoDrip Film: <span class="text-green-600 font-bold">$<span id="filmPriceValue">3.00</span>/lb</span>
+            </label>
+            <input type="range" id="filmPrice" min="2" max="6" step="0.05" value="3.00" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>$2</span>
+              <span>$6</span>
+            </div>
+          </div>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              HoldFast Resin: <span class="text-green-600 font-bold">$<span id="resinPriceValue">2.75</span>/lb</span>
+            </label>
+            <input type="range" id="resinPrice" min="2" max="4" step="0.05" value="2.75" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>$2</span>
+              <span>$4</span>
+            </div>
+          </div>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              Byproduct Price: <span class="text-green-600 font-bold">$<span id="byproductPriceValue">1.20</span>/lb</span>
+            </label>
+            <input type="range" id="byproductPrice" min="0.5" max="3" step="0.05" value="1.20" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>$0.5</span>
+              <span>$3</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Volume Variables -->
+        <div class="space-y-6">
+          <h3 class="font-semibold text-lg text-purple-800 flex items-center">
+            <span class="w-2 h-2 bg-purple-500 rounded-full mr-2"></span>
+            Production Volumes
+          </h3>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              Film Volume Scale: <span class="text-purple-600 font-bold"><span id="filmVolumeValue">100</span>%</span>
+            </label>
+            <input type="range" id="filmVolume" min="50" max="150" step="5" value="100" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>50%</span>
+              <span>150%</span>
+            </div>
+          </div>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              Resin Volume Scale: <span class="text-purple-600 font-bold"><span id="resinVolumeValue">100</span>%</span>
+            </label>
+            <input type="range" id="resinVolume" min="50" max="150" step="5" value="100" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>50%</span>
+              <span>150%</span>
+            </div>
+          </div>
+          
+          <div class="slider-container">
+            <label class="font-medium text-slate-700 block mb-2">
+              Market Penetration: <span class="text-purple-600 font-bold"><span id="marketPenetrationValue">75</span>%</span>
+            </label>
+            <input type="range" id="marketPenetration" min="25" max="100" step="5" value="75" class="w-full">
+            <div class="flex justify-between text-xs text-slate-500 mt-1">
+              <span>25%</span>
+              <span>100%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Financial Results -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Revenue Section -->
+      <div class="glass-card p-6 rounded-2xl shadow-xl animate-fade-in">
+        <div class="section-header">
+          <h2 class="text-2xl font-semibold">💰 Revenue Projections</h2>
+        </div>
+        
+        <div class="space-y-6">
+          <div class="revenue-card p-6 rounded-xl">
+            <h3 class="font-semibold text-xl text-green-800 mb-4">2026 Revenue</h3>
+            <div class="grid grid-cols-2 gap-6 mt-2">
+              <div class="text-center">
+                <p class="text-sm text-green-700 font-medium">DirigoDrip Film</p>
+                <p class="text-3xl font-bold text-green-600 mt-1">$<span id="filmRevenue2026">360,000</span></p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-green-700 font-medium">Byproduct Sales</p>
+                <p class="text-3xl font-bold text-green-600 mt-1">$<span id="byproductRevenue2026">460,800</span></p>
+              </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-green-300">
+              <p class="text-sm text-green-700 font-medium text-center">Total 2026</p>
+              <p class="text-4xl font-bold text-green-700 text-center mt-1">$<span id="totalRevenue2026">820,800</span></p>
+            </div>
+          </div>
+
+          <div class="revenue-card p-6 rounded-xl">
+            <h3 class="font-semibold text-xl text-green-800 mb-4">2027 Revenue</h3>
+            <div class="grid grid-cols-3 gap-4 mt-2">
+              <div class="text-center">
+                <p class="text-xs text-green-700 font-medium">DirigoDrip Film</p>
+                <p class="text-xl font-bold text-green-600 mt-1">$<span id="filmRevenue2027">1,080,000</span></p>
+              </div>
+              <div class="text-center">
+                <p class="text-xs text-green-700 font-medium">HoldFast Resin</p>
+                <p class="text-xl font-bold text-green-600 mt-1">$<span id="resinRevenue2027">5,940,000</span></p>
+              </div>
+              <div class="text-center">
+                <p class="text-xs text-green-700 font-medium">Byproducts</p>
+                <p class="text-xl font-bold text-green-600 mt-1">$<span id="byproductRevenue2027">1,382,400</span></p>
+              </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-green-300">
+              <p class="text-sm text-green-700 font-medium text-center">Total 2027</p>
+              <p class="text-4xl font-bold text-green-700 text-center mt-1">$<span id="totalRevenue2027">8,402,400</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Structure -->
+      <div class="glass-card p-6 rounded-2xl shadow-xl animate-fade-in">
+        <div class="section-header">
+          <h2 class="text-2xl font-semibold">📊 Cost Structure</h2>
+        </div>
+        
+        <div class="space-y-6">
+          <div class="cost-card p-6 rounded-xl">
+            <h3 class="font-semibold text-xl text-red-800 mb-4">2026 COGS</h3>
+            <div class="grid grid-cols-2 gap-6 mt-2">
+              <div class="text-center">
+                <p class="text-sm text-red-700 font-medium">Material Production</p>
+                <p class="text-2xl font-bold text-red-600 mt-1">$<span id="materialCost2026">508,680</span></p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-red-700 font-medium">Contract Mfg</p>
+                <p class="text-2xl font-bold text-red-600 mt-1">$<span id="contractCost2026">144,000</span></p>
+              </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-red-300">
+              <p class="text-sm text-red-700 font-medium text-center">Total COGS 2026</p>
+              <p class="text-3xl font-bold text-red-700 text-center mt-1">$<span id="totalCOGS2026">802,680</span></p>
+            </div>
+          </div>
+
+          <div class="cost-card p-6 rounded-xl">
+            <h3 class="font-semibold text-xl text-red-800 mb-4">2027 COGS</h3>
+            <div class="grid grid-cols-2 gap-6 mt-2">
+              <div class="text-center">
+                <p class="text-sm text-red-700 font-medium">Material Production</p>
+                <p class="text-2xl font-bold text-red-600 mt-1">$<span id="materialCost2027">1,526,040</span></p>
+              </div>
+              <div class="text-center">
+                <p class="text-sm text-red-700 font-medium">Resin Production</p>
+                <p class="text-2xl font-bold text-red-600 mt-1">$<span id="resinCost2027">3,052,080</span></p>
+              </div>
+            </div>
+            <div class="mt-6 pt-4 border-t border-red-300">
+              <p class="text-sm text-red-700 font-medium text-center">Total COGS 2027</p>
+              <p class="text-3xl font-bold text-red-700 text-center mt-1">$<span id="totalCOGS2027">5,191,640</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unit Economics -->
+    <div class="glass-card p-6 rounded-2xl shadow-xl animate-fade-in">
+      <div class="section-header">
+        <h2 class="text-2xl font-semibold">🔬 Unit Economics</h2>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <div class="metric-card profit-card p-6 rounded-xl">
+          <h3 class="font-semibold text-xl text-blue-800 mb-4 flex items-center">
+            <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+            DirigoDrip Film
+          </h3>
+          <div class="space-y-3 mt-3">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Cost per lb:</span>
+              <span class="font-bold text-lg">$<span id="filmCostPerLb">2.12</span></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Price per lb:</span>
+              <span class="font-bold text-lg text-green-600">$<span id="filmPricePerLb">3.00</span></span>
+            </div>
+            <div class="flex justify-between items-center border-t pt-3">
+              <span class="text-slate-600 font-medium">Gross Margin:</span>
+              <span class="font-bold text-xl text-blue-600"><span id="filmMargin">29%</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card profit-card p-6 rounded-xl">
+          <h3 class="font-semibold text-xl text-purple-800 mb-4 flex items-center">
+            <span class="w-3 h-3 bg-blue-500 rounded-full mr-2"></span>
+            HoldFast Resin
+          </h3>
+          <div class="space-y-3 mt-3">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Cost per lb:</span>
+              <span class="font-bold text-lg">$<span id="resinCostPerLb">1.41</span></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Price per lb:</span>
+              <span class="font-bold text-lg text-green-600">$<span id="resinPricePerLb">2.75</span></span>
+            </div>
+            <div class="flex justify-between items-center border-t pt-3">
+              <span class="text-slate-600 font-medium">Gross Margin:</span>
+              <span class="font-bold text-xl text-purple-600"><span id="resinMargin">49%</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="metric-card profit-card p-6 rounded-xl">
+          <h3 class="font-semibold text-xl text-green-800 mb-4 flex items-center">
+            <span class="w-3 h-3 bg-purple-500 rounded-full mr-2"></span>
+            Byproduct Stream
+          </h3>
+          <div class="space-y-3 mt-3">
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Cost per lb:</span>
+              <span class="font-bold text-lg">$<span id="byproductCostPerLb">0.25</span></span>
+            </div>
+            <div class="flex justify-between items-center">
+              <span class="text-slate-600">Price per lb:</span>
+              <span class="font-bold text-lg text-green-600">$<span id="byproductPricePerLb">1.20</span></span>
+            </div>
+            <div class="flex justify-between items-center border-t pt-3">
+              <span class="text-slate-600 font-medium">Gross Margin:</span>
+              <span class="font-bold text-xl text-green-600"><span id="byproductMargin">79%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+            </div>
+          </div>
+
+          <div class="bg-green-50 p-4 rounded">
+            <h3 class="font-semibold text-lg">2027 Revenue</h3>
+            <div class="grid grid-cols-3 gap-4 mt-2">
+              <div>
+                <p class="text-sm text-gray-600">DirigoDrip Film</p>
+                <p class="text-xl font-bold text-green-600">$<span id="filmRevenue2027">1,080,000</span></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">HoldFast Resin</p>
+                <p class="text-xl font-bold text-green-600">$<span id="resinRevenue2027">5,940,000</span></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Byproducts</p>
+                <p class="text-xl font-bold text-green-600">$<span id="byproductRevenue2027">1,382,400</span></p>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t">
+              <p class="text-sm text-gray-600">Total 2027</p>
+              <p class="text-3xl font-bold text-green-700">$<span id="totalRevenue2027">8,402,400</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Cost Structure -->
+      <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-2xl font-semibold mb-4 text-red-700">Cost Structure</h2>
+        
+        <div class="space-y-4">
+          <div class="bg-red-50 p-4 rounded">
+            <h3 class="font-semibold text-lg">2026 COGS</h3>
+            <div class="grid grid-cols-2 gap-4 mt-2">
+              <div>
+                <p class="text-sm text-gray-600">Material Production</p>
+                <p class="text-xl font-bold text-red-600">$<span id="materialCost2026">508,680</span></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Contract Mfg</p>
+                <p class="text-xl font-bold text-red-600">$<span id="contractCost2026">144,000</span></p>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t">
+              <p class="text-sm text-gray-600">Total COGS 2026</p>
+              <p class="text-2xl font-bold text-red-700">$<span id="totalCOGS2026">802,680</span></p>
+            </div>
+          </div>
+
+          <div class="bg-red-50 p-4 rounded">
+            <h3 class="font-semibold text-lg">2027 COGS</h3>
+            <div class="grid grid-cols-2 gap-4 mt-2">
+              <div>
+                <p class="text-sm text-gray-600">Material Production</p>
+                <p class="text-xl font-bold text-red-600">$<span id="materialCost2027">1,526,040</span></p>
+              </div>
+              <div>
+                <p class="text-sm text-gray-600">Resin Production</p>
+                <p class="text-xl font-bold text-red-600">$<span id="resinCost2027">3,052,080</span></p>
+              </div>
+            </div>
+            <div class="mt-3 pt-3 border-t">
+              <p class="text-sm text-gray-600">Total COGS 2027</p>
+              <p class="text-2xl font-bold text-red-700">$<span id="totalCOGS2027">5,191,640</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Unit Economics -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-2xl font-semibold mb-4">Unit Economics</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bg-blue-50 p-4 rounded">
+          <h3 class="font-semibold text-lg text-blue-800">DirigoDrip Film</h3>
+          <div class="space-y-2 mt-3">
+            <div class="flex justify-between">
+              <span>Cost per lb:</span>
+              <span class="font-bold">$<span id="filmCostPerLb">2.12</span></span>
+            </div>
+            <div class="flex justify-between">
+              <span>Price per lb:</span>
+              <span class="font-bold text-green-600">$<span id="filmPricePerLb">3.00</span></span>
+            </div>
+            <div class="flex justify-between border-t pt-2">
+              <span>Gross Margin:</span>
+              <span class="font-bold text-blue-600"><span id="filmMargin">29%</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-purple-50 p-4 rounded">
+          <h3 class="font-semibold text-lg text-purple-800">HoldFast Resin</h3>
+          <div class="space-y-2 mt-3">
+            <div class="flex justify-between">
+              <span>Cost per lb:</span>
+              <span class="font-bold">$<span id="resinCostPerLb">1.41</span></span>
+            </div>
+            <div class="flex justify-between">
+              <span>Price per lb:</span>
+              <span class="font-bold text-green-600">$<span id="resinPricePerLb">2.75</span></span>
+            </div>
+            <div class="flex justify-between border-t pt-2">
+              <span>Gross Margin:</span>
+              <span class="font-bold text-purple-600"><span id="resinMargin">49%</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-green-50 p-4 rounded">
+          <h3 class="font-semibold text-lg text-green-800">Byproduct Stream</h3>
+          <div class="space-y-2 mt-3">
+            <div class="flex justify-between">
+              <span>Cost per lb:</span>
+              <span class="font-bold">$<span id="byproductCostPerLb">0.25</span></span>
+            </div>
+            <div class="flex justify-between">
+              <span>Price per lb:</span>
+              <span class="font-bold text-green-600">$<span id="byproductPricePerLb">1.20</span></span>
+            </div>
+            <div class="flex justify-between border-t pt-2">
+              <span>Gross Margin:</span>
+              <span class="font-bold text-green-600"><span id="byproductMargin">79%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profitability Analysis -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-2xl font-semibold mb-4">Profitability Analysis</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="font-semibold text-lg mb-3">2026 Performance</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b">
+              <span>Revenue:</span>
+              <span class="font-bold text-green-600">$<span id="revenue2026Display">820,800</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>COGS:</span>
+              <span class="font-bold text-red-600">$<span id="cogs2026Display">802,680</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>Gross Profit:</span>
+              <span class="font-bold" id="grossProfit2026Color">$<span id="grossProfit2026">18,120</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>Expenses:</span>
+              <span class="font-bold text-red-600">$<span id="expenses2026">438,000</span></span>
+            </div>
+            <div class="flex justify-between py-3 border-t-2 text-lg">
+              <span class="font-semibold">Net Income:</span>
+              <span class="font-bold" id="netIncome2026Color">$<span id="netIncome2026">-419,880</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-semibold text-lg mb-3">2027 Performance</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b">
+              <span>Revenue:</span>
+              <span class="font-bold text-green-600">$<span id="revenue2027Display">8,402,400</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>COGS:</span>
+              <span class="font-bold text-red-600">$<span id="cogs2027Display">5,191,640</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>Gross Profit:</span>
+              <span class="font-bold text-green-600">$<span id="grossProfit2027">3,210,760</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span>Expenses:</span>
+              <span class="font-bold text-red-600">$<span id="expenses2027">944,000</span></span>
+            </div>
+            <div class="flex justify-between py-3 border-t-2 text-lg">
+              <span class="font-semibold">Net Income:</span>
+              <span class="font-bold text-green-600">$<span id="netIncome2027">2,266,760</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario Analysis -->
+    <div class="bg-white p-6 rounded-lg shadow">
+      <h2 class="text-2xl font-semibold mb-4">Scenario Status</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bg-gray-50 p-4 rounded" id="scenario2026">
+          <h3 class="font-semibold text-lg">2026 Outlook</h3>
+          <p id="scenario2026Text" class="mt-2 text-amber-600">Investment Phase - Expected Losses</p>
+          <div class="mt-3">
+            <p class="text-sm text-gray-600">Break-even Revenue Needed:</p>
+            <p class="font-bold">$<span id="breakeven2026">1,240,680</span></p>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded" id="scenario2027">
+          <h3 class="font-semibold text-lg">2027 Outlook</h3>
+          <p id="scenario2027Text" class="mt-2 text-green-600">Profitable Operations</p>
+          <div class="mt-3">
+            <p class="text-sm text-gray-600">Margin Improvement vs 2026:</p>
+            <p class="font-bold text-green-600"><span id="marginImprovement">+36%</span></p>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded">
+          <h3 class="font-semibold text-lg">Key Risks</h3>
+          <ul class="mt-2 text-sm space-y-1">
+            <li id="riskKelp" class="text-amber-600">• Kelp price volatility</li>
+            <li id="riskVolume" class="text-amber-600">• Volume scaling challenges</li>
+            <li id="riskCompetition" class="text-amber-600">• Competitive pricing pressure</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // Base data from P&L
+    const baseData = {
+      // Base volumes (lbs)
+      filmVolume2026: 120000,
+      filmVolume2027: 360000,
+      resinVolume2027: 2160000,
+      byproductVolume2026: 384000,
+      byproductVolume2027: 1152000,
+      
+      // Base costs
+      baseKelpPrice: 8.00,
+      baseAlginateYield: 0.12,
+      baseMfgEfficiency: 0.85,
+      
+      // Base expenses
+      expenses2026: 438000,
+      expenses2027: 944000
+    };
+
+    function formatNumber(num) {
+      return new Intl.NumberFormat().format(Math.round(num));
+    }
+
+    function formatPercent(num) {
+      return Math.round(num) + '%';
+    }
+
+    function updateDashboard() {
+      // Get slider values
+      const kelpPrice = parseFloat(document.getElementById('kelpPrice').value);
+      const alginateYield = parseFloat(document.getElementById('alginateYield').value) / 100;
+      const mfgEfficiency = parseFloat(document.getElementById('mfgEfficiency').value) / 100;
+      const filmPrice = parseFloat(document.getElementById('filmPrice').value);
+      const resinPrice = parseFloat(document.getElementById('resinPrice').value);
+      const byproductPrice = parseFloat(document.getElementById('byproductPrice').value);
+      const filmVolumeScale = parseFloat(document.getElementById('filmVolume').value) / 100;
+      const resinVolumeScale = parseFloat(document.getElementById('resinVolume').value) / 100;
+      const marketPenetration = parseFloat(document.getElementById('marketPenetration').value) / 100;
+
+      // Update slider displays
+      document.getElementById('kelpPriceValue').textContent = kelpPrice.toFixed(2);
+      document.getElementById('alginateYieldValue').textContent = (alginateYield * 100).toFixed(1);
+      document.getElementById('mfgEfficiencyValue').textContent = Math.round(mfgEfficiency * 100);
+      document.getElementById('filmPriceValue').textContent = filmPrice.toFixed(2);
+      document.getElementById('resinPriceValue').textContent = resinPrice.toFixed(2);
+      document.getElementById('byproductPriceValue').textContent = byproductPrice.toFixed(2);
+      document.getElementById('filmVolumeValue').textContent = Math.round(filmVolumeScale * 100);
+      document.getElementById('resinVolumeValue').textContent = Math.round(resinVolumeScale * 100);
+      document.getElementById('marketPenetrationValue').textContent = Math.round(marketPenetration * 100);
+
+      // Calculate adjusted volumes
+      const adjFilmVolume2026 = baseData.filmVolume2026 * filmVolumeScale * marketPenetration;
+      const adjFilmVolume2027 = baseData.filmVolume2027 * filmVolumeScale * marketPenetration;
+      const adjResinVolume2027 = baseData.resinVolume2027 * resinVolumeScale * marketPenetration;
+      const adjByproductVolume2026 = baseData.byproductVolume2026 * filmVolumeScale * marketPenetration;
+      const adjByproductVolume2027 = baseData.byproductVolume2027 * (filmVolumeScale + resinVolumeScale) / 2 * marketPenetration;
+
+      // Calculate cost adjustments
+      const kelpCostMultiplier = kelpPrice / baseData.baseKelpPrice;
+      const yieldMultiplier = baseData.baseAlginateYield / alginateYield;
+      const efficiencyMultiplier = baseData.baseMfgEfficiency / mfgEfficiency;
+      const costMultiplier = kelpCostMultiplier * yieldMultiplier * efficiencyMultiplier;
+
+      // Calculate unit costs
+      const filmCostPerLb = 2.12 * costMultiplier;
+      const resinCostPerLb = 1.41 * costMultiplier;
+      const byproductCostPerLb = 0.25;
+
+      // Calculate revenues
+      const filmRevenue2026 = adjFilmVolume2026 * filmPrice;
+      const filmRevenue2027 = adjFilmVolume2027 * filmPrice;
+      const resinRevenue2027 = adjResinVolume2027 * resinPrice;
+      const byproductRevenue2026 = adjByproductVolume2026 * byproductPrice;
+      const byproductRevenue2027 = adjByproductVolume2027 * byproductPrice;
+
+      // Calculate costs
+      const materialCost2026 = adjFilmVolume2026 * filmCostPerLb;
+      const materialCost2027 = adjFilmVolume2027 * filmCostPerLb;
+      const resinCost2027 = adjResinVolume2027 * resinCostPerLb;
+      const contractCost2026 = materialCost2026 * 0.28; // Proportional to material cost
+      const contractCost2027 = (materialCost2027 + resinCost2027) * 0.15;
+
+      const totalCOGS2026 = materialCost2026 + contractCost2026 + 150000; // Base labor
+      const totalCOGS2027 = materialCost2027 + resinCost2027 + contractCost2027 + 562500; // Base labor
+
+      // Total revenues
+      const totalRevenue2026 = filmRevenue2026 + byproductRevenue2026;
+      const totalRevenue2027 = filmRevenue2027 + resinRevenue2027 + byproductRevenue2027;
+
+      // Gross profits
+      const grossProfit2026 = totalRevenue2026 - totalCOGS2026;
+      const grossProfit2027 = totalRevenue2027 - totalCOGS2027;
+
+      // Net income
+      const netIncome2026 = grossProfit2026 - baseData.expenses2026;
+      const netIncome2027 = grossProfit2027 - baseData.expenses2027;
+
+      // Update revenue displays
+      document.getElementById('filmRevenue2026').textContent = formatNumber(filmRevenue2026);
+      document.getElementById('filmRevenue2027').textContent = formatNumber(filmRevenue2027);
+      document.getElementById('resinRevenue2027').textContent = formatNumber(resinRevenue2027);
+      document.getElementById('byproductRevenue2026').textContent = formatNumber(byproductRevenue2026);
+      document.getElementById('byproductRevenue2027').textContent = formatNumber(byproductRevenue2027);
+      document.getElementById('totalRevenue2026').textContent = formatNumber(totalRevenue2026);
+      document.getElementById('totalRevenue2027').textContent = formatNumber(totalRevenue2027);
+
+      // Update cost displays
+      document.getElementById('materialCost2026').textContent = formatNumber(materialCost2026);
+      document.getElementById('materialCost2027').textContent = formatNumber(materialCost2027);
+      document.getElementById('resinCost2027').textContent = formatNumber(resinCost2027);
+      document.getElementById('contractCost2026').textContent = formatNumber(contractCost2026);
+      document.getElementById('totalCOGS2026').textContent = formatNumber(totalCOGS2026);
+      document.getElementById('totalCOGS2027').textContent = formatNumber(totalCOGS2027);
+
+      // Update unit economics
+      document.getElementById('filmCostPerLb').textContent = filmCostPerLb.toFixed(2);
+      document.getElementById('resinCostPerLb').textContent = resinCostPerLb.toFixed(2);
+      document.getElementById('byproductCostPerLb').textContent = byproductCostPerLb.toFixed(2);
+      document.getElementById('filmPricePerLb').textContent = filmPrice.toFixed(2);
+      document.getElementById('resinPricePerLb').textContent = resinPrice.toFixed(2);
+      document.getElementById('byproductPricePerLb').textContent = byproductPrice.toFixed(2);
+
+      // Calculate margins
+      const filmMargin = ((filmPrice - filmCostPerLb) / filmPrice) * 100;
+      const resinMargin = ((resinPrice - resinCostPerLb) / resinPrice) * 100;
+      const byproductMargin = ((byproductPrice - byproductCostPerLb) / byproductPrice) * 100;
+
+      document.getElementById('filmMargin').textContent = formatPercent(filmMargin);
+      document.getElementById('resinMargin').textContent = formatPercent(resinMargin);
+      document.getElementById('byproductMargin').textContent = formatPercent(byproductMargin);
+
+      // Update profitability
+      document.getElementById('revenue2026Display').textContent = formatNumber(totalRevenue2026);
+      document.getElementById('revenue2027Display').textContent = formatNumber(totalRevenue2027);
+      document.getElementById('cogs2026Display').textContent = formatNumber(totalCOGS2026);
+      document.getElementById('cogs2027Display').textContent = formatNumber(totalCOGS2027);
+      document.getElementById('grossProfit2026').textContent = formatNumber(grossProfit2026);
+      document.getElementById('grossProfit2027').textContent = formatNumber(grossProfit2027);
+      document.getElementById('netIncome2026').textContent = formatNumber(netIncome2026);
+      document.getElementById('netIncome2027').textContent = formatNumber(netIncome2027);
+
+      // Color coding for profitability
+      const grossProfit2026Color = document.getElementById('grossProfit2026Color');
+      const netIncome2026Color = document.getElementById('netIncome2026Color');
+      
+      grossProfit2026Color.className = grossProfit2026 >= 0 ? 'font-bold text-green-600' : 'font-bold text-red-600';
+      netIncome2026Color.className = netIncome2026 >= 0 ? 'font-bold text-green-600' : 'font-bold text-red-600';
+
+      // Scenario analysis
+      const breakeven2026 = totalCOGS2026 + baseData.expenses2026;
+      document.getElementById('breakeven2026').textContent = formatNumber(breakeven2026);
+
+      const marginImprovement = ((grossProfit2027 / totalRevenue2027) - (grossProfit2026 / totalRevenue2026)) * 100;
+      document.getElementById('marginImprovement').textContent = (marginImprovement >= 0 ? '+' : '') + marginImprovement.toFixed(1) + '%';
+
+      // Update scenario text
+      const scenario2026Text = netIncome2026 >= 0 ? "Profitable Operations" : "Investment Phase - Expected Losses";
+      const scenario2027Text = netIncome2027 >= 0 ? "Profitable Operations" : "Needs Improvement";
+      
+      document.getElementById('scenario2026Text').textContent = scenario2026Text;
+      document.getElementById('scenario2027Text').textContent = scenario2027Text;
+      document.getElementById('scenario2026Text').className = `mt-2 ${netIncome2026 >= 0 ? 'text-green-600' : 'text-amber-600'}`;
+      document.getElementById('scenario2027Text').className = `mt-2 ${netIncome2027 >= 0 ? 'text-green-600' : 'text-red-600'}`;
+
+      // Risk indicators
+      document.getElementById('riskKelp').className = kelpPrice > 10 ? 'text-red-600' : 'text-amber-600';
+      document.getElementById('riskVolume').className = (filmVolumeScale < 0.8 || resinVolumeScale < 0.8) ? 'text-red-600' : 'text-amber-600';
+      document.getElementById('riskCompetition').className = (filmPrice < 2.5 || resinPrice < 2.2) ? 'text-red-600' : 'text-amber-600';
+    }
+
+    // Add event listeners
+    document.querySelectorAll('input[type="range"]').forEach(slider => {
+      slider.addEventListener('input', updateDashboard);
+    });
+
+    // Initial calculation
+    window.addEventListener('load', updateDashboard);
+  </script>
+</body>
+</html>
