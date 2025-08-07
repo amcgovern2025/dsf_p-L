@@ -219,12 +219,12 @@
           
           <div class="slider-container">
             <div class="flex justify-between items-center mb-2">
-              <label class="text-sm font-medium text-gray-700">Manufacturing Efficiency</label>
-              <span class="text-sm font-semibold text-blue-600"><span id="mfgEfficiencyValue">85</span>%</span>
+              <label class="text-sm font-medium text-gray-700">Ethanol Recovery</label>
+              <span class="text-sm font-semibold text-blue-600"><span id="ethanolRecoveryValue">0</span>%</span>
             </div>
-            <input type="range" id="mfgEfficiency" min="70" max="95" step="1" value="85" class="w-full mb-1">
+            <input type="range" id="ethanolRecovery" min="0" max="95" step="5" value="0" class="w-full mb-1">
             <div class="flex justify-between text-xs text-gray-400">
-              <span>70%</span><span>95%</span>
+              <span>0%</span><span>95%</span>
             </div>
           </div>
         </div>
@@ -716,7 +716,7 @@
       // Base costs
       baseKelpPrice: 8.00,
       baseAlginateYield: 0.12,
-      baseMfgEfficiency: 0.85,
+      baseEthanolRecovery: 0.0,
       
       // Base expenses
       expenses2026: 438000,
@@ -735,7 +735,7 @@
       // Get slider values
       const kelpPrice = parseFloat(document.getElementById('kelpPrice').value);
       const alginateYield = parseFloat(document.getElementById('alginateYield').value) / 100;
-      const mfgEfficiency = parseFloat(document.getElementById('mfgEfficiency').value) / 100;
+      const ethanolRecovery = parseFloat(document.getElementById('ethanolRecovery').value) / 100;
       const filmPrice = parseFloat(document.getElementById('filmPrice').value);
       const resinPrice = parseFloat(document.getElementById('resinPrice').value);
       const byproductPrice = parseFloat(document.getElementById('byproductPrice').value);
@@ -746,7 +746,7 @@
       // Update slider displays
       document.getElementById('kelpPriceValue').textContent = kelpPrice.toFixed(2);
       document.getElementById('alginateYieldValue').textContent = (alginateYield * 100).toFixed(1);
-      document.getElementById('mfgEfficiencyValue').textContent = Math.round(mfgEfficiency * 100);
+      document.getElementById('ethanolRecoveryValue').textContent = Math.round(ethanolRecovery * 100);
       document.getElementById('filmPriceValue').textContent = filmPrice.toFixed(2);
       document.getElementById('resinPriceValue').textContent = resinPrice.toFixed(2);
       document.getElementById('byproductPriceValue').textContent = byproductPrice.toFixed(2);
@@ -764,8 +764,8 @@
       // Calculate cost adjustments
       const kelpCostMultiplier = kelpPrice / baseData.baseKelpPrice;
       const yieldMultiplier = baseData.baseAlginateYield / alginateYield;
-      const efficiencyMultiplier = baseData.baseMfgEfficiency / mfgEfficiency;
-      const costMultiplier = kelpCostMultiplier * yieldMultiplier * efficiencyMultiplier;
+      const ethanolCostMultiplier = 1 - ethanolRecovery; // Recovery reduces ethanol costs
+      const costMultiplier = kelpCostMultiplier * yieldMultiplier * (0.7 + 0.3 * ethanolCostMultiplier); // Ethanol is ~30% of variable costs
 
       // Calculate unit costs
       const filmCostPerLb = 2.12 * costMultiplier;
