@@ -122,11 +122,125 @@
               <span class="text-gray-600">Cost per lb</span>
               <span class="font-semibold">$<span id="resinCostPerLb">1.41</span></span>
             </div>
+            <div class="flex justify-between border-t pt-3">
+              <span class="text-gray-600 font-medium">Gross Margin</span>
+              <span class="font-bold text-lg"><span id="resinMargin">49%</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg">
+          <h3 class="font-semibold text-lg text-gray-900 mb-4">Byproduct Stream</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Cost per lb</span>
+              <span class="font-semibold">$<span id="byproductCostPerLb">0.25</span></span>
+            </div>
             <div class="flex justify-between">
               <span class="text-gray-600">Price per lb</span>
-              <span class="font-semibold text-green-600">$<span id="resinPricePerLb">2.75</span></span>
+              <span class="font-semibold text-green-600">$<span id="byproductPricePerLb">1.20</span></span>
             </div>
-            <!DOCTYPE html>
+            <div class="flex justify-between border-t pt-3">
+              <span class="text-gray-600 font-medium">Gross Margin</span>
+              <span class="font-bold text-lg"><span id="byproductMargin">79%</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profitability Analysis -->
+    <div class="card p-8 rounded-xl mb-8">
+      <h2 class="section-title">Profitability Analysis</h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg">
+          <h3 class="font-semibold text-lg text-gray-900 mb-4">2026 Performance</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Revenue</span>
+              <span class="font-semibold text-green-600">$<span id="revenue2026Display">820,800</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">COGS</span>
+              <span class="font-semibold text-red-600">$<span id="cogs2026Display">802,680</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Gross Profit</span>
+              <span class="font-semibold" id="grossProfit2026Color">$<span id="grossProfit2026">18,120</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Expenses</span>
+              <span class="font-semibold text-red-600">$<span id="expenses2026">438,000</span></span>
+            </div>
+            <div class="flex justify-between py-3 border-t-2 text-lg">
+              <span class="font-semibold text-gray-900">Net Income</span>
+              <span class="font-bold" id="netIncome2026Color">$<span id="netIncome2026">-419,880</span></span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg">
+          <h3 class="font-semibold text-lg text-gray-900 mb-4">2027 Performance</h3>
+          <div class="space-y-3">
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Revenue</span>
+              <span class="font-semibold text-green-600">$<span id="revenue2027Display">8,402,400</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">COGS</span>
+              <span class="font-semibold text-red-600">$<span id="cogs2027Display">5,191,640</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Gross Profit</span>
+              <span class="font-semibold text-green-600">$<span id="grossProfit2027">3,210,760</span></span>
+            </div>
+            <div class="flex justify-between py-2 border-b">
+              <span class="text-gray-600">Expenses</span>
+              <span class="font-semibold text-red-600">$<span id="expenses2027">944,000</span></span>
+            </div>
+            <div class="flex justify-between py-3 border-t-2 text-lg">
+              <span class="font-semibold text-gray-900">Net Income</span>
+              <span class="font-bold text-green-600">$<span id="netIncome2027">2,266,760</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scenario Analysis -->
+    <div class="card p-8 rounded-xl">
+      <h2 class="section-title">Scenario Status</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg" id="scenario2026">
+          <h3 class="font-semibold text-lg text-gray-900 mb-3">2026 Outlook</h3>
+          <p id="scenario2026Text" class="text-amber-600 mb-3">Investment Phase - Expected Losses</p>
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Break-even Revenue Needed</p>
+            <p class="font-bold text-lg">$<span id="breakeven2026">1,240,680</span></p>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg" id="scenario2027">
+          <h3 class="font-semibold text-lg text-gray-900 mb-3">2027 Outlook</h3>
+          <p id="scenario2027Text" class="text-green-600 mb-3">Profitable Operations</p>
+          <div>
+            <p class="text-sm text-gray-600 mb-1">Margin Improvement vs 2026</p>
+            <p class="font-bold text-lg text-green-600"><span id="marginImprovement">+36%</span></p>
+          </div>
+        </div>
+
+        <div class="bg-gray-50 border border-gray-200 p-6 rounded-lg">
+          <h3 class="font-semibold text-lg text-gray-900 mb-3">Key Risks</h3>
+          <ul class="space-y-2 text-sm">
+            <li id="riskKelp" class="text-amber-600">• Kelp price volatility</li>
+            <li id="riskVolume" class="text-amber-600">• Volume scaling challenges</li>
+            <li id="riskCompetition" class="text-amber-600">• Competitive pricing pressure</li>
+          </ul>
+        </div>
+      </div>
+    </div><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
