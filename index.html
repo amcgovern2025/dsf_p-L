@@ -329,7 +329,7 @@
       position: relative;
       display: inline-block;
     }
-    .tooltip .tooltiptext {
+    .tooltiptext {
       visibility: hidden;
       width: 280px;
       background-color: #1f2937;
@@ -338,7 +338,7 @@
       border-radius: 6px;
       padding: 8px 12px;
       position: absolute;
-      z-index: 1;
+      z-index: 1000;
       bottom: 125%;
       left: 50%;
       margin-left: -140px;
@@ -347,7 +347,7 @@
       font-size: 12px;
       line-height: 1.4;
     }
-    .tooltip .tooltiptext::after {
+    .tooltiptext::after {
       content: "";
       position: absolute;
       top: 100%;
@@ -360,6 +360,28 @@
     .tooltip:hover .tooltiptext {
       visibility: visible;
       opacity: 1;
+    }
+    .info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      background-color: #374151;
+      color: white;
+      border-radius: 50%;
+      font-size: 10px;
+      font-weight: bold;
+      margin-left: 4px;
+      cursor: help;
+    }
+    .info-icon::before {
+      content: "?";
+    }
+    .asterisk {
+      color: #dc2626;
+      font-weight: bold;
+      margin-right: 2px;
     }
     .section-title {
       font-size: 1.25rem;
