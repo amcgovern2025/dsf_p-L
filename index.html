@@ -139,7 +139,69 @@
   </div>
 
   <script>
-    const DATA = YOUR_SUMMARY_JSON_HERE; // paste your JSON object here from earlier step
+   const DATA = {
+  "2026": {
+    "Bioplastic Material Film (DirigoDrip)": 360000.0,
+    "Bioplastic resin pellets (HoldFast)": 0.0,
+    "Refining Byproduct Stream (DirigoDrip)": 460800.0,
+    "Refining Byproduct Stream (HoldFast)": 0.0,
+    "Total Sales Income": 820800.0,
+    "Total Income": 820800.0,
+    "Total Cost of Goods Sold": 802680.0,
+    "Gross Profit": 18120.0,
+    "Total Expenses": 438000.0,
+    "Net Operating Income": -419880.0,
+    "Material Production (DirigoDrip)": 508680.0,
+    "Resin Production (HoldFast)": 0.0,
+    "Contract Manufacturing (Toll Coating)": 144000.0,
+    "Manufacturing Employees (In-house biorefining)": 150000.0,
+    "Cash Ending": -33352.0,
+    "Net Cash Flow": -14352.0,
+    "Total Cash Available": 3787448.0,
+    "NET INCOME": -419880.0
+  },
+  "2027": {
+    "Bioplastic Material Film (DirigoDrip)": 1080000.0,
+    "Bioplastic resin pellets (HoldFast)": 2475000.0,
+    "Refining Byproduct Stream (DirigoDrip)": 1382400.0,
+    "Refining Byproduct Stream (HoldFast)": 8788235.294,
+    "Total Sales Income": 13725635.29,
+    "Total Income": 13825635.29,
+    "Total Cost of Goods Sold": 14856840.0,
+    "Gross Profit": -1031204.706,
+    "Total Expenses": 944000.0,
+    "Net Operating Income": -1975204.706,
+    "Material Production (DirigoDrip)": 1526040.0,
+    "Resin Production (HoldFast)": 12717000.0,
+    "Contract Manufacturing (Toll Coating)": 388800.0,
+    "Manufacturing Employees (In-house biorefining)": 225000.0,
+    "Cash Ending": -1508437.0,
+    "Net Cash Flow": -1475085.0,
+    "Total Cash Available": 15352403.29,
+    "NET INCOME": -1975204.706
+  },
+  "2028": {
+    "Bioplastic Material Film (DirigoDrip)": 2160000.0,
+    "Bioplastic resin pellets (HoldFast)": 4950000.0,
+    "Refining Byproduct Stream (DirigoDrip)": 2764800.0,
+    "Refining Byproduct Stream (HoldFast)": 17576470.59,
+    "Total Sales Income": 27451270.59,
+    "Total Income": 27851270.59,
+    "Total Cost of Goods Sold": 29601180.0,
+    "Gross Profit": -1749909.412,
+    "Total Expenses": 1605500.0,
+    "Net Operating Income": -3355409.412,
+    "Material Production (DirigoDrip)": 3052080.0,
+    "Resin Production (HoldFast)": 25434000.0,
+    "Contract Manufacturing (Toll Coating)": 777600.0,
+    "Manufacturing Employees (In-house biorefining)": 337500.0,
+    "Cash Ending": -6983846.0,
+    "Net Cash Flow": -5473009.0,
+    "Total Cash Available": 26342833.88,
+    "NET INCOME": -3355409.412
+  }
+};
+
 
     const fmt = n => (n==null || isNaN(n)) ? "—" : "$" + Intl.NumberFormat().format(Math.round(n));
     const pct = n => (n==null || isNaN(n)) ? "—" : (n.toFixed(1) + "%");
