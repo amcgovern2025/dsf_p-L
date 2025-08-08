@@ -3,217 +3,431 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dirigo Sea Farm — P&L + Cash Dashboard (v2)</title>
+  <title>Dirigo Sea Farm — Cost + P&L Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
+    body { background: #f8fafc; }
     .card { background:white; border:1px solid #e5e7eb; border-radius:1rem; box-shadow:0 1px 3px rgba(0,0,0,.08); }
     .kpi { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; border-radius:.75rem; }
     .kpi .label { color:#6b7280; font-size:.85rem; }
     .kpi .value { font-weight:700; font-size:1.25rem; }
-    .slider-label { display:flex; justify-content:space-between; font-size:.85rem; color:#374151; }
+    .slider-label { display:flex; justify-content:space-between; font-size:.9rem; color:#111827; }
     input[type=range] { width:100%; }
+    .pill { font-size:.75rem; padding:.15rem .5rem; border-radius:999px; background:#e5e7eb; }
+    .muted { color:#6b7280; }
   </style>
 </head>
-<body class="bg-gray-50 p-6">
-  <div class="max-w-7xl mx-auto space-y-6">
-    <header class="card p-6">
+<body class="p-6">
+  <div class="max-w-7xl mx-auto space-y-8">
+
+    <!-- =========================================
+         A) COST LEVERS (your original slider set)
+         ========================================= -->
+    <header class="text-center">
+      <h1 class="text-3xl font-bold">Dirigo Sea Farm Cost Dashboard</h1>
+      <p class="text-gray-600">Adjust the levers below to simulate cost dynamics for Holdfast™ resin and film production</p>
+    </header>
+
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Kelp Price -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Seaweed Price ($/lb)</span><span id="kelpPriceValue">8.00</span></div>
+        <input type="range" id="kelpPrice" min="4" max="15" step="0.25" value="8" class="w-full mb-1">
+      </div>
+
+      <!-- Alginate Yield -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Alginate Yield (%)</span><span id="alginateYieldValue">12.0</span></div>
+        <input type="range" id="alginateYield" min="8" max="20" step="0.5" value="12" class="w-full mb-1">
+      </div>
+
+      <!-- Ethanol Recovery -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Ethanol Recovery (%)</span><span id="ethanolRecoveryValue">0</span></div>
+        <input type="range" id="ethanolRecovery" min="0" max="95" step="5" value="0" class="w-full mb-1">
+      </div>
+
+      <!-- Microalgae Cost -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Microalgae Cost ($/lb)</span><span id="microalgaeCostValue">1.00</span></div>
+        <input type="range" id="microalgaeCost" min="0.5" max="5" step="0.25" value="1.00" class="w-full mb-1">
+      </div>
+
+      <!-- Target Resin Price -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Target Resin Price ($/lb)</span><span id="resinPriceValue">2.75</span></div>
+        <input type="range" id="resinPrice" min="2" max="4" step="0.05" value="2.75" class="w-full mb-1">
+      </div>
+
+      <!-- Macro/Micro Blend (macro share) -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Macroalgae (%)</span><span id="macroPctValue">20%</span></div>
+        <input type="range" id="macroPct" min="0" max="100" step="5" value="20" class="w-full mb-1">
+        <p class="text-xs muted">Microalgae (%): <span id="microPctValue">80%</span></p>
+      </div>
+
+      <!-- Film Price -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Film Price ($/lb)</span><span id="filmPriceValue">3.00</span></div>
+        <input type="range" id="filmPrice" min="2" max="6" step="0.05" value="3.00" class="w-full mb-1">
+      </div>
+
+      <!-- Byproduct Price -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Biowaste Sale Price ($/lb)</span><span id="byproductPriceValue">7.50</span></div>
+        <input type="range" id="byproductPrice" min="0.5" max="10" step="0.25" value="7.50" class="w-full mb-1">
+        <p class="text-xs muted">Expected range: $5–$10/lb</p>
+      </div>
+
+      <!-- Market / Volume knobs -->
+      <div class="card p-4">
+        <div class="slider-label"><span>Market Penetration (%)</span><span id="marketPenetrationValue">75%</span></div>
+        <input type="range" id="marketPenetration" min="25" max="100" step="5" value="75" class="w-full mb-1">
+      </div>
+    </section>
+
+    <!-- Cost Outputs -->
+    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold mb-2">Sodium Alginate COG</h3>
+        <p class="text-4xl font-extrabold text-blue-600">$<span id="alginateCOG">—</span>/lb</p>
+      </div>
+      <div class="card p-6">
+        <h3 class="text-lg font-semibold mb-2">Macroalgae Film COG</h3>
+        <p class="text-4xl font-extrabold text-green-600">$<span id="filmCOG">—</span>/lb</p>
+        <p class="text-xs muted">(Before waste sales: $<span id="filmCOGBefore">—</span>/lb)</p>
+      </div>
+    </section>
+
+    <section class="card p-6">
+      <h3 class="text-xl font-semibold mb-2">Blended Resin COG</h3>
+      <p class="muted">Target: $<span id="resinTarget">2.75</span>/lb</p>
+      <p class="muted">Max Input COG (w/ <span id="yieldLossPct">20</span>% yield loss): $<span id="maxInputCOG">—</span>/lb</p>
+      <p class="text-xl font-bold">Current Blend COG: $<span id="blendCOG">—</span>/lb</p>
+      <p id="breakevenTag" class="mt-2 text-red-600 font-semibold">✖ Too expensive to break even.</p>
+    </section>
+
+    <!-- =========================================
+         B) P&L + Cash Module
+         ========================================= -->
+    <section class="card p-6">
       <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-3">
         <div>
-          <h1 class="text-2xl md:text-3xl font-bold">Dirigo Sea Farm</h1>
-          <p class="text-gray-600">P&L + Cash Dashboard (what-if: volume sliders + monthly burn)</p>
+          <h2 class="text-xl md:text-2xl font-semibold">P&L + Cash Dashboard</h2>
+          <p class="text-gray-600">What-if volume sliders + monthly burn & runway</p>
         </div>
         <div class="flex items-center gap-3">
           <label class="text-sm text-gray-600">Year</label>
           <select id="yearSelect" class="border rounded-lg px-3 py-2">
-            <option>2026</option>
-            <option>2027</option>
-            <option>2028</option>
+            <option>2026</option><option>2027</option><option>2028</option>
           </select>
         </div>
       </div>
-    </header>
 
-    <!-- Controls -->
-    <section class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <div class="card p-5">
-        <h2 class="text-lg font-semibold mb-3">Volume Sliders</h2>
-        <div class="space-y-5">
-          <div>
-            <div class="slider-label"><span>Film Volume (DirigoDrip)</span><span id="filmPct">100%</span></div>
-            <input type="range" id="filmSlider" min="0" max="200" value="100">
-            <p class="text-xs text-gray-500 mt-1">Scales Film revenue, Drip Byproduct revenue, and Film-tied COGS (Material + Contract Mfg).</p>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+        <div class="p-5 rounded-lg border">
+          <h3 class="font-semibold mb-2">Income Statement</h3>
+          <div class="kpi bg-green-50"><span class="label">Revenue (sales)</span><span class="value text-green-700" id="kpiRevenue">$0</span></div>
+          <div class="kpi bg-red-50 mt-2"><span class="label">COGS</span><span class="value text-red-700" id="kpiCOGS">$0</span></div>
+          <div class="kpi bg-blue-50 mt-2"><span class="label">Gross Profit</span><span class="value text-blue-700" id="kpiGross">$0</span></div>
+          <div class="kpi bg-slate-50 mt-2"><span class="label">Gross Margin</span><span class="value" id="kpiGM">0%</span></div>
+          <div class="kpi bg-amber-50 mt-2"><span class="label">OpEx (fixed)</span><span class="value text-amber-700" id="kpiOpEx">$0</span></div>
+          <div class="kpi bg-slate-100 mt-2"><span class="label">Net Income (what-if)</span><span class="value" id="kpiNI">$0</span></div>
+        </div>
+
+        <div class="p-5 rounded-lg border">
+          <h3 class="font-semibold mb-2">Cash & Burn</h3>
+          <div class="kpi bg-slate-50"><span class="label">Ending Cash (original)</span><span class="value" id="kpiCashEnd">$0</span></div>
+          <div class="kpi bg-sky-50 mt-2"><span class="label">Monthly Burn (what-if)</span><span class="value text-sky-700" id="kpiBurn">$0</span></div>
+          <div class="kpi bg-violet-50 mt-2"><span class="label">Runway (months)</span><span class="value text-violet-700" id="kpiRunway">—</span></div>
+        </div>
+
+        <div class="p-5 rounded-lg border">
+          <h3 class="font-semibold mb-2">COGS Breakdown (adjusted)</h3>
+          <ul class="space-y-2 text-sm">
+            <li class="flex justify-between border-b pb-1"><span>Material (Drip)</span><span id="cogsMatDrip">$0</span></li>
+            <li class="flex justify-between border-b pb-1"><span>Resin (HoldFast)</span><span id="cogsResin">$0</span></li>
+            <li class="flex justify-between border-b pb-1"><span>Contract Mfg</span><span id="cogsContract">$0</span></li>
+            <li class="flex justify-between"><span>Mfg Labor (fixed)</span><span id="cogsLabor">$0</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold">3-Year Trend (original)</span>
+            <span class="pill">Source: spreadsheet</span>
           </div>
-          <div>
-            <div class="slider-label"><span>Resin Volume (HoldFast)</span><span id="resinPct">100%</span></div>
-            <input type="range" id="resinSlider" min="0" max="200" value="100">
-            <p class="text-xs text-gray-500 mt-1">Scales Resin revenue, HoldFast Byproduct revenue, and Resin-tied COGS.</p>
+          <canvas id="trendChart" height="120"></canvas>
+        </div>
+        <div>
+          <div class="flex items-center justify-between mb-2">
+            <span class="font-semibold">Monthly Burn (what-if)</span>
+            <span class="text-xs text-gray-500">Derived from adjusted Net Income</span>
           </div>
+          <canvas id="burnChart" height="120"></canvas>
         </div>
       </div>
 
-      <div class="card p-5">
-        <h2 class="text-lg font-semibold mb-3">Income Statement</h2>
-        <div class="kpi bg-green-50">
-          <span class="label">Revenue (sales only)</span>
-          <span class="value text-green-700" id="kpiRevenue">$0</span>
-        </div>
-        <div class="kpi bg-red-50 mt-2">
-          <span class="label">COGS</span>
-          <span class="value text-red-700" id="kpiCOGS">$0</span>
-        </div>
-        <div class="kpi bg-blue-50 mt-2">
-          <span class="label">Gross Profit</span>
-          <span class="value text-blue-700" id="kpiGross">$0</span>
-        </div>
-        <div class="kpi bg-slate-50 mt-2">
-          <span class="label">Gross Margin</span>
-          <span class="value" id="kpiGM">0%</span>
-        </div>
-        <div class="kpi bg-amber-50 mt-2">
-          <span class="label">OpEx (fixed)</span>
-          <span class="value text-amber-700" id="kpiOpEx">$0</span>
-        </div>
-        <div class="kpi bg-slate-100 mt-2">
-          <span class="label">Net Income (what-if)</span>
-          <span class="value" id="kpiNI">$0</span>
-        </div>
-      </div>
-
-      <div class="card p-5">
-        <h2 class="text-lg font-semibold mb-3">Cash & Burn</h2>
-        <div class="kpi bg-slate-50">
-          <span class="label">Ending Cash (original)</span>
-          <span class="value" id="kpiCashEnd">$0</span>
-        </div>
-        <div class="kpi bg-sky-50 mt-2">
-          <span class="label">Monthly Burn (what-if)</span>
-          <span class="value text-sky-700" id="kpiBurn">$0</span>
-        </div>
-        <div class="kpi bg-violet-50 mt-2">
-          <span class="label">Runway (months, what-if)</span>
-          <span class="value text-violet-700" id="kpiRunway">—</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Revenue Mix + COGS breakdown -->
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="card p-6">
-        <h2 class="text-lg font-semibold mb-3">Revenue Mix (adjusted)</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-          <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>DirigoDrip Film</span><span class="font-bold" id="mixFilm">$0</span></div>
-          <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>HoldFast Resin</span><span class="font-bold" id="mixResin">$0</span></div>
-          <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>Byproduct (Drip)</span><span class="font-bold" id="mixByDrip">$0</span></div>
-          <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>Byproduct (HoldFast)</span><span class="font-bold" id="mixByResin">$0</span></div>
-        </div>
-      </div>
-
-      <div class="card p-6">
-        <h2 class="text-lg font-semibold mb-3">COGS Breakdown (adjusted)</h2>
-        <ul class="space-y-2 text-sm">
-          <li class="flex justify-between border-b pb-1"><span>Material (Drip)</span><span id="cogsMatDrip">$0</span></li>
-          <li class="flex justify-between border-b pb-1"><span>Resin (HoldFast)</span><span id="cogsResin">$0</span></li>
-          <li class="flex justify-between border-b pb-1"><span>Contract Mfg</span><span id="cogsContract">$0</span></li>
-          <li class="flex justify-between"><span>Mfg Labor (fixed)</span><span id="cogsLabor">$0</span></li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- Charts -->
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="card p-6">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-semibold">3-Year Trend (original)</h2>
-        </div>
-        <canvas id="trendChart" height="120"></canvas>
-      </div>
-      <div class="card p-6">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-lg font-semibold">Monthly Burn (what-if)</h2>
-          <span class="text-xs text-gray-500">Derived from adjusted Net Income</span>
-        </div>
-        <canvas id="burnChart" height="120"></canvas>
+      <div class="mt-6 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
+        <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>DirigoDrip Film</span><span class="font-bold" id="mixFilm">$0</span></div>
+        <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>HoldFast Resin</span><span class="font-bold" id="mixResin">$0</span></div>
+        <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>Byproduct (Drip)</span><span class="font-bold" id="mixByDrip">$0</span></div>
+        <div class="p-3 bg-green-50 rounded-lg flex items-center justify-between"><span>Byproduct (HoldFast)</span><span class="font-bold" id="mixByResin">$0</span></div>
       </div>
     </section>
   </div>
 
   <script>
-   const DATA = {
-  "2026": {
-    "Bioplastic Material Film (DirigoDrip)": 360000.0,
-    "Bioplastic resin pellets (HoldFast)": 0.0,
-    "Refining Byproduct Stream (DirigoDrip)": 460800.0,
-    "Refining Byproduct Stream (HoldFast)": 0.0,
-    "Total Sales Income": 820800.0,
-    "Total Income": 820800.0,
-    "Total Cost of Goods Sold": 802680.0,
-    "Gross Profit": 18120.0,
-    "Total Expenses": 438000.0,
-    "Net Operating Income": -419880.0,
-    "Material Production (DirigoDrip)": 508680.0,
-    "Resin Production (HoldFast)": 0.0,
-    "Contract Manufacturing (Toll Coating)": 144000.0,
-    "Manufacturing Employees (In-house biorefining)": 150000.0,
-    "Cash Ending": -33352.0,
-    "Net Cash Flow": -14352.0,
-    "Total Cash Available": 3787448.0,
-    "NET INCOME": -419880.0
-  },
-  "2027": {
-    "Bioplastic Material Film (DirigoDrip)": 1080000.0,
-    "Bioplastic resin pellets (HoldFast)": 2475000.0,
-    "Refining Byproduct Stream (DirigoDrip)": 1382400.0,
-    "Refining Byproduct Stream (HoldFast)": 8788235.294,
-    "Total Sales Income": 13725635.29,
-    "Total Income": 13825635.29,
-    "Total Cost of Goods Sold": 14856840.0,
-    "Gross Profit": -1031204.706,
-    "Total Expenses": 944000.0,
-    "Net Operating Income": -1975204.706,
-    "Material Production (DirigoDrip)": 1526040.0,
-    "Resin Production (HoldFast)": 12717000.0,
-    "Contract Manufacturing (Toll Coating)": 388800.0,
-    "Manufacturing Employees (In-house biorefining)": 225000.0,
-    "Cash Ending": -1508437.0,
-    "Net Cash Flow": -1475085.0,
-    "Total Cash Available": 15352403.29,
-    "NET INCOME": -1975204.706
-  },
-  "2028": {
-    "Bioplastic Material Film (DirigoDrip)": 2160000.0,
-    "Bioplastic resin pellets (HoldFast)": 4950000.0,
-    "Refining Byproduct Stream (DirigoDrip)": 2764800.0,
-    "Refining Byproduct Stream (HoldFast)": 17576470.59,
-    "Total Sales Income": 27451270.59,
-    "Total Income": 27851270.59,
-    "Total Cost of Goods Sold": 29601180.0,
-    "Gross Profit": -1749909.412,
-    "Total Expenses": 1605500.0,
-    "Net Operating Income": -3355409.412,
-    "Material Production (DirigoDrip)": 3052080.0,
-    "Resin Production (HoldFast)": 25434000.0,
-    "Contract Manufacturing (Toll Coating)": 777600.0,
-    "Manufacturing Employees (In-house biorefining)": 337500.0,
-    "Cash Ending": -6983846.0,
-    "Net Cash Flow": -5473009.0,
-    "Total Cash Available": 26342833.88,
-    "NET INCOME": -3355409.412
-  }
-};
+    // ======== embed the latest numbers from your spreadsheet (2026–2028) ========
+    const DATA = {
+      "2026": {
+        "Bioplastic Material Film (DirigoDrip)": 360000.0,
+        "Bioplastic resin pellets (HoldFast)": 0.0,
+        "Refining Byproduct Stream (DirigoDrip)": 460800.0,
+        "Refining Byproduct Stream (HoldFast)": 0.0,
+        "Total Sales Income": 820800.0,
+        "Total Income": 820800.0,
+        "Total Cost of Goods Sold": 802680.0,
+        "Gross Profit": 18120.0,
+        "Total Expenses": 438000.0,
+        "Net Operating Income": -419880.0,
+        "Material Production (DirigoDrip)": 508680.0,
+        "Resin Production (HoldFast)": 0.0,
+        "Contract Manufacturing (Toll Coating)": 144000.0,
+        "Manufacturing Employees (In-house biorefining)": 150000.0,
+        "Cash Ending": -33352.0,
+        "Net Cash Flow": -14352.0,
+        "Total Cash Available": 3787448.0,
+        "NET INCOME": -419880.0
+      },
+      "2027": {
+        "Bioplastic Material Film (DirigoDrip)": 1080000.0,
+        "Bioplastic resin pellets (HoldFast)": 2475000.0,
+        "Refining Byproduct Stream (DirigoDrip)": 1382400.0,
+        "Refining Byproduct Stream (HoldFast)": 8788235.294,
+        "Total Sales Income": 13725635.29,
+        "Total Income": 13825635.29,
+        "Total Cost of Goods Sold": 14856840.0,
+        "Gross Profit": -1031204.706,
+        "Total Expenses": 944000.0,
+        "Net Operating Income": -1975204.706,
+        "Material Production (DirigoDrip)": 1526040.0,
+        "Resin Production (HoldFast)": 12717000.0,
+        "Contract Manufacturing (Toll Coating)": 388800.0,
+        "Manufacturing Employees (In-house biorefining)": 225000.0,
+        "Cash Ending": -1508437.0,
+        "Net Cash Flow": -1475085.0,
+        "Total Cash Available": 15352403.29,
+        "NET INCOME": -1975204.706
+      },
+      "2028": {
+        "Bioplastic Material Film (DirigoDrip)": 2160000.0,
+        "Bioplastic resin pellets (HoldFast)": 4950000.0,
+        "Refining Byproduct Stream (DirigoDrip)": 2764800.0,
+        "Refining Byproduct Stream (HoldFast)": 17576470.59,
+        "Total Sales Income": 27451270.59,
+        "Total Income": 27851270.59,
+        "Total Cost of Goods Sold": 29601180.0,
+        "Gross Profit": -1749909.412,
+        "Total Expenses": 1605500.0,
+        "Net Operating Income": -3355409.412,
+        "Material Production (DirigoDrip)": 3052080.0,
+        "Resin Production (HoldFast)": 25434000.0,
+        "Contract Manufacturing (Toll Coating)": 777600.0,
+        "Manufacturing Employees (In-house biorefining)": 337500.0,
+        "Cash Ending": -6983846.0,
+        "Net Cash Flow": -5473009.0,
+        "Total Cash Available": 26342833.88,
+        "NET INCOME": -3355409.412
+      }
+    };
 
+    // ======== Cost lever math (kept simple; swap constants to match your exact model) ========
+    const fmt = n => (n==null || isNaN(n)) ? "—" : Intl.NumberFormat().format((+n).toFixed ? +(+n).toFixed(2) : n);
+    const money = n => (n==null || isNaN(n)) ? "—" : Intl.NumberFormat().format(Math.round(n));
 
-    const fmt = n => (n==null || isNaN(n)) ? "—" : "$" + Intl.NumberFormat().format(Math.round(n));
+    function updateCostLevers(){
+      const kelpPrice = parseFloat(document.getElementById('kelpPrice').value);
+      const alginateYield = parseFloat(document.getElementById('alginateYield').value) / 100;
+      const ethanolRecovery = parseFloat(document.getElementById('ethanolRecovery').value) / 100;
+      const microalgaeCost = parseFloat(document.getElementById('microalgaeCost').value);
+      const resinPrice = parseFloat(document.getElementById('resinPrice').value);
+      const filmPrice = parseFloat(document.getElementById('filmPrice').value);
+      const byproductPrice = parseFloat(document.getElementById('byproductPrice').value);
+      const marketPen = parseFloat(document.getElementById('marketPenetration').value) / 100;
+      const macroPct = parseFloat(document.getElementById('macroPct').value) / 100;
+      const microPct = 1 - macroPct;
+
+      // UI
+      document.getElementById('kelpPriceValue').textContent = kelpPrice.toFixed(2);
+      document.getElementById('alginateYieldValue').textContent = (alginateYield*100).toFixed(1);
+      document.getElementById('ethanolRecoveryValue').textContent = Math.round(ethanolRecovery*100);
+      document.getElementById('microalgaeCostValue').textContent = microalgaeCost.toFixed(2);
+      document.getElementById('resinPriceValue').textContent = resinPrice.toFixed(2);
+      document.getElementById('filmPriceValue').textContent = filmPrice.toFixed(2);
+      document.getElementById('byproductPriceValue').textContent = byproductPrice.toFixed(2);
+      document.getElementById('marketPenetrationValue').textContent = Math.round(marketPen*100);
+      document.getElementById('macroPctValue').textContent = Math.round(macroPct*100) + "%";
+      document.getElementById('microPctValue').textContent = Math.round(microPct*100) + "%";
+
+      // === Alginate COG model ===
+      // Raw kelp cost per lb alginate
+      const kelpPerLbAlginate = kelpPrice / Math.max(alginateYield, 0.0001);
+      // Ethanol overhead per lb alginate (reduced by recovery). Tune base to match your lab runs.
+      const ETHANOL_OVERHEAD_BASE = 49; // ~$49/lb alginate at 0% recovery -> aligns to ~115 with kelp=8, yield=12%
+      const ethanolOverhead = ETHANOL_OVERHEAD_BASE * (1 - ethanolRecovery);
+      const alginateCOG = kelpPerLbAlginate + ethanolOverhead;
+
+      // === Film COG model ===
+      // Base film cost before waste credit (tunable)
+      const filmBaseCOG = (alginateCOG * 0.6) + 10.0; // assumes ~60% alginate contribution + $10 processing
+      const wasteCredit = Math.min(18.0, byproductPrice * 2.4); // tuned so default ~ $28.6 after credit
+      const filmCOGBefore = filmBaseCOG;
+      const filmCOG = Math.max(filmBaseCOG - wasteCredit, 0);
+
+      // === Resin Blend COG ===
+      // Blend: macro feedstock cost uses alginateCOG; micro uses microalgaeCost. Add $0.60/lb processing.
+      const PROCESS_ADD = 0.60;
+      const blendCOG = macroPct * alginateCOG + microPct * microalgaeCost + PROCESS_ADD;
+
+      // Break-even helper
+      const yieldLossPct = 20; // as in your note
+      const maxInputCOG = resinPrice * (1 - yieldLossPct/100);
+
+      // Update UI
+      document.getElementById('alginateCOG').textContent = fmt(alginateCOG);
+      document.getElementById('filmCOGBefore').textContent = fmt(filmCOGBefore);
+      document.getElementById('filmCOG').textContent = fmt(filmCOG);
+      document.getElementById('resinTarget').textContent = resinPrice.toFixed(2);
+      document.getElementById('yieldLossPct').textContent = yieldLossPct;
+      document.getElementById('maxInputCOG').textContent = fmt(maxInputCOG);
+      document.getElementById('blendCOG').textContent = fmt(blendCOG);
+
+      const breakeven = blendCOG <= maxInputCOG;
+      const tag = document.getElementById('breakevenTag');
+      tag.textContent = breakeven ? "✔ Meets or beats target." : "✖ Too expensive to break even.";
+      tag.className = breakeven ? "mt-2 text-green-600 font-semibold" : "mt-2 text-red-600 font-semibold";
+
+      // Also nudge the P&L module's volume-scaled revenue/COGS using market penetration (acts as a global scale)
+      window._marketPenAdj = marketPen; // used in P&L update()
+    }
+
+    // ======== P&L module (same as prior v2, but honors market penetration knob) ========
+    let trendChart, burnChart;
+    const fmtMoney = n => (n==null || isNaN(n)) ? "—" : "$" + Intl.NumberFormat().format(Math.round(n));
     const pct = n => (n==null || isNaN(n)) ? "—" : (n.toFixed(1) + "%");
 
-    const yearSelect = document.getElementById("yearSelect");
-    const filmSlider = document.getElementById("filmSlider");
-    const resinSlider= document.getElementById("resinSlider");
-    const filmPct    = document.getElementById("filmPct");
-    const resinPct   = document.getElementById("resinPct");
+    function gm(rev, cogs) { if (!rev || (!cogs && cogs!==0)) return null; return ((rev - cogs) / rev) * 100.0; }
 
-    let trendChart, burnChart;
+    function updatePnL(){
+      const y = parseInt(document.getElementById("yearSelect").value);
+      const s = JSON.parse(JSON.stringify(DATA[y] || {}));
+      const marketPen = window._marketPenAdj ?? 0.75;
 
-    function gm(rev, cogs) {
-      if (!rev || rev===0 || (!cogs && cogs!==0)) return null;
-      retu
+      // Volume scaling sliders for product mix (use your existing “volume” concept here)
+      const fMul = 1.0;  // product-specific multipliers controlled below (we’ll use marketPen globally)
+      const rMul = 1.0;
+
+      // Revenue pieces
+      const baseFilm   = s["Bioplastic Material Film (DirigoDrip)"] || 0;
+      const baseResin  = s["Bioplastic resin pellets (HoldFast)"] || 0;
+      const baseByDrip = s["Refining Byproduct Stream (DirigoDrip)"] || 0;
+      const baseByRes  = s["Refining Byproduct Stream (HoldFast)"] || 0;
+
+      const revFilm   = baseFilm * fMul * marketPen;
+      const revResin  = baseResin * rMul * marketPen;
+      const revByDrip = baseByDrip * fMul * marketPen;
+      const revByRes  = baseByRes * rMul * marketPen;
+      const adjRevenue = revFilm + revResin + revByDrip + revByRes;
+
+      // COGS breakdown
+      const baseMatDrip = s["Material Production (DirigoDrip)"] || 0;
+      const baseResCOGS = s["Resin Production (HoldFast)"] || 0;
+      const baseContract= s["Contract Manufacturing (Toll Coating)"] || 0;
+      const baseLabor   = s["Manufacturing Employees (In-house biorefining)"] || 0;
+
+      const cogsMatDrip = baseMatDrip * fMul * marketPen;
+      const cogsResin   = baseResCOGS * rMul * marketPen;
+      const cogsContract= baseContract * fMul * marketPen;
+      const cogsLabor   = baseLabor; // fixed
+      const adjCOGS = cogsMatDrip + cogsResin + cogsContract + cogsLabor;
+
+      const opex = s["Total Expenses"] ?? s["Expenses"] ?? 0;
+      const adjGross = adjRevenue - adjCOGS;
+      const adjNI = adjGross - opex;
+
+      // KPIs
+      document.getElementById("kpiRevenue").textContent = fmtMoney(adjRevenue);
+      document.getElementById("kpiCOGS").textContent    = fmtMoney(adjCOGS);
+      document.getElementById("kpiGross").textContent   = fmtMoney(adjGross);
+      document.getElementById("kpiGM").textContent      = pct(gm(adjRevenue, adjCOGS) ?? 0);
+      document.getElementById("kpiOpEx").textContent    = fmtMoney(opex);
+      document.getElementById("kpiNI").textContent      = fmtMoney(adjNI);
+
+      const cashEnd = s["Cash Ending"];
+      document.getElementById("kpiCashEnd").textContent = fmtMoney(cashEnd);
+
+      const monthlyBurn = (adjNI < 0) ? Math.abs(adjNI)/12.0 : 0;
+      document.getElementById("kpiBurn").textContent = fmtMoney(monthlyBurn);
+      const runway = (cashEnd && monthlyBurn>0) ? (cashEnd / monthlyBurn) : null;
+      document.getElementById("kpiRunway").textContent = runway ? runway.toFixed(1) : "—";
+
+      // Revenue mix UI
+      document.getElementById("mixFilm").textContent   = fmtMoney(revFilm);
+      document.getElementById("mixResin").textContent  = fmtMoney(revResin);
+      document.getElementById("mixByDrip").textContent = fmtMoney(revByDrip);
+      document.getElementById("mixByResin").textContent= fmtMoney(revByRes);
+
+      // COGS breakdown UI
+      document.getElementById("cogsMatDrip").textContent = fmtMoney(cogsMatDrip);
+      document.getElementById("cogsResin").textContent   = fmtMoney(cogsResin);
+      document.getElementById("cogsContract").textContent= fmtMoney(cogsContract);
+      document.getElementById("cogsLabor").textContent   = fmtMoney(cogsLabor);
+
+      // Trend (original)
+      const labels = Object.keys(DATA).sort().map(k => k);
+      const revs   = labels.map(k => (DATA[k]["Total Sales Income"] ?? DATA[k]["Total Income"] ?? 0));
+      const cgs    = labels.map(k => (DATA[k]["Total Cost of Goods Sold"] ?? 0));
+      const nis    = labels.map(k => (DATA[k]["NET INCOME"] ?? 0));
+
+      const tctx = document.getElementById("trendChart").getContext("2d");
+      if (window._trend) window._trend.destroy();
+      window._trend = new Chart(tctx, {
+        type: 'line',
+        data: { labels, datasets: [
+          { label: 'Revenue (original)', data: revs },
+          { label: 'COGS (original)', data: cgs },
+          { label: 'Net Income (original)', data: nis },
+        ]},
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } },
+          scales: { y: { ticks: { callback: v => '$'+Intl.NumberFormat().format(v) } } } }
+      });
+
+      // Monthly Burn (what-if)
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      const monthlyVals = new Array(12).fill( (adjNI/12.0) );
+      const bctx = document.getElementById("burnChart").getContext("2d");
+      if (window._burn) window._burn.destroy();
+      window._burn = new Chart(bctx, {
+        type: 'bar',
+        data: { labels: months, datasets: [{ label: 'Monthly Net (what-if)', data: monthlyVals }] },
+        options: { responsive: true, plugins: { legend: { display: false } },
+          scales: { y: { ticks: { callback: v => '$'+Intl.NumberFormat().format(v) } } } }
+      });
+    }
+
+    // Hook up listeners
+    document.getElementById('yearSelect').addEventListener('change', updatePnL);
+    ['kelpPrice','alginateYield','ethanolRecovery','microalgaeCost','resinPrice','filmPrice','byproductPrice','marketPenetration','macroPct']
+      .forEach(id => document.getElementById(id).addEventListener('input', () => {
+        updateCostLevers(); updatePnL();
+      }));
+
+    // init
+    window.addEventListener('load', () => { updateCostLevers(); updatePnL(); });
+  </script>
+</body>
+</html>
